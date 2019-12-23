@@ -61,8 +61,9 @@ const appendEdgeFor = (map, polygon, options, { parts, newPoint, startPoint, end
  */
 export const createFor = (map, latLngs, options = defaultOptions, preventMutations = false) => {
 
+    let mapPolygons = polygons && polygons.get(map);
     // Determine whether we've reached the maximum polygons.
-    const limitReached = polygons.get(map).size === options.maximumPolygons;
+    const limitReached = !mapPolygons ? true : mapPolygons.size === options.maximumPolygons;
 
     // Apply the concave hull algorithm to the created polygon if the options allow.
     const concavedLatLngs = !preventMutations && options.concavePolygon ? concavePolygon(map, latLngs) : latLngs;
@@ -88,9 +89,12 @@ export const createFor = (map, latLngs, options = defaultOptions, preventMutatio
 
     });
 
+    mapPolygons = polygons && polygons.get(map);
     // Append the current polygon to the master set.
-    addedPolygons.forEach(polygon => polygons.get(map).add(polygon));
-
+    if (mapPolygons) {
+    	addedPolygons.forEach(polygon => mapPolygons.add(polygon));
+    }
+    
     if (!limitReached && !preventMutations && polygons.get(map).size > 1 && options.mergePolygons) {
 
         // Attempt a merge of all the polygons if the options allow, and the polygon count is above one.
