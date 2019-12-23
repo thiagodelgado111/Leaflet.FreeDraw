@@ -9,8 +9,8 @@ import { NONE, CREATE, EDIT, DELETE, APPEND } from './Flags';
  * @return {void}
  */
 export const updateFor = (map, eventType) => {
-
-    const latLngs = Array.from(polygons.get(map)).map(polygon => {
+    const mapPolygons = polygons && polygons.get(map) || [];
+    const latLngs = Array.from(mapPolygons).map(polygon => {
 
         // Ensure the polygon has been closed.
         const latLngs = polygon.getLatLngs();
@@ -19,7 +19,7 @@ export const updateFor = (map, eventType) => {
     });
 
     // Fire the current set of lat lngs.
-    map[instanceKey].fire('markers', { latLngs, eventType });
+    map[instanceKey] && map[instanceKey].fire('markers', { latLngs, eventType });
 
 };
 
